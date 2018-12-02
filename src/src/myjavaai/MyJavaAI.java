@@ -135,13 +135,13 @@ public class MyJavaAI extends AbstractOOAI
 		return super.unitDestroyed(arg0, arg1);
 	}
 
-	Unit commander;
+	Unit _commander;
 
 	@Override
 	public int unitFinished(Unit unit) {
 		if(unit.getDef().getName().equals("armcom")) {
-			_callBack.getGame().sendTextMessage("Got the commander", 0);
-			commander = unit;
+			_callBack.getGame().sendTextMessage("Got the _commander", 0);
+			_commander = unit;
 		}
 		// TODO Auto-generated method stub
 		return super.unitFinished(unit);
@@ -166,9 +166,25 @@ public class MyJavaAI extends AbstractOOAI
 	}
 
 	@Override
-	public int update(int arg0) {
+	public int update(int frame) {
 		_callBack.getGame().sendTextMessage("Hello, world!", 0);
-		return super.update(arg0);
+
+		if(frame == 0){
+
+			List<UnitDef> unitDefs = this._callBack.getUnitDefs();
+			UnitDef solarPlant = null;
+
+			for(UnitDef unitDef : unitDefs){
+				if(unitDef.getName().equals("armsolar")){
+					solarPlant = unitDef;
+					break;
+				}
+			}
+
+			_commander.build(solarPlant, _commander.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+		}
+
+		return super.update(frame);
 	}
 
 	@Override
