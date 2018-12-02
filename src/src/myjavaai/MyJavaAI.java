@@ -11,6 +11,8 @@ public class MyJavaAI extends AbstractOOAI
 
 	private BaUnits _baUnits;
 
+	private Unit _commander;
+
 	List<AIFloat3> _metalPositions;
 
 	@Override
@@ -68,9 +70,11 @@ public class MyJavaAI extends AbstractOOAI
 	}
 
 	@Override
-	public int init(int arg0, OOAICallback callback) {
-		_baUnits = new BaUnits(callback.getUnitDefs());
+	public int init(int arg0, OOAICallback callback)
+	{
 		_callBack = callback;
+		_baUnits = new BaUnits(callback.getUnitDefs(), this);
+		SendTextMessage("Init called.");
 		return 0;
 	}
 
@@ -140,15 +144,47 @@ public class MyJavaAI extends AbstractOOAI
 		return super.unitDestroyed(arg0, arg1);
 	}
 
-	Unit _commander;
+	private void DecideWhatToDoWithUnit(Unit unit)
+	{
+		SendTextMessage("Deciding what to do with Unit " + unit.getDef().getHumanName());
+
+		if(unit.getDef().getName().equals("armcom"))
+		{
+			Resource Metal = _callBack.getResourceByName("Metal");
+			Resource Energy = _callBack.getResourceByName("Energy");
+			float currentMetal = _callBack.getEconomy().getCurrent(Metal);
+			float currentEnergy = _callBack.getEconomy().getCurrent(Energy);
+
+			if(currentMetal == 0)
+			{
+				SendTextMessage("Out of metal, building mex.");
+				AIFloat3 closestspot = closestMetalSpot(_commander.getPos());
+				_commander.build(_baUnits.ArmMetalExtractor, closestspot, 0, (short) 0, Integer.MAX_VALUE);
+			}
+			else if(currentEnergy == 0)
+			{
+				SendTextMessage("Out of energy, building solar.");
+				_commander.build(_baUnits.ArmSolarPlant, _commander.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+			}
+			else
+			{
+				SendTextMessage("Economy is good, I dont know what to do.");
+				_commander.build(_baUnits.ArmKbotLab, _commander.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+			}
+		}
+	}
 
 	@Override
 	public int unitFinished(Unit unit) {
+		SendTextMessage("Unit finished");
+
 		if(unit.getDef().getName().equals("armcom")) {
 			_callBack.getGame().sendTextMessage("Got the _commander", 0);
 			_commander = unit;
 		}
-		// TODO Auto-generated method stub
+
+		DecideWhatToDoWithUnit(unit);
+
 		return super.unitFinished(unit);
 	}
 
@@ -159,15 +195,17 @@ public class MyJavaAI extends AbstractOOAI
 	}
 
 	@Override
-	public int unitIdle(Unit arg0) {
-		// TODO Auto-generated method stub
-		return super.unitIdle(arg0);
+	public int unitIdle(Unit unit)
+	{
+		AIFloat3 position = unit.getPos();
+		SendTextMessage("Unit " + unit.getDef().getHumanName() + " is idle at X: " + position.x + " Y: " + position.y + " Z: " + position.z);
+		DecideWhatToDoWithUnit(unit);
+		return super.unitIdle(unit);
 	}
 
 	@Override
-	public int unitMoveFailed(Unit arg0) {
-		// TODO Auto-generated method stub
-		return super.unitMoveFailed(arg0);
+	public int unitMoveFailed(Unit unit) {
+		return super.unitMoveFailed(unit);
 	}
 
 	public void checkForMetal()
@@ -175,10 +213,6 @@ public class MyJavaAI extends AbstractOOAI
 		SendTextMessage("Checking for resources...");
 		Resource metal = _callBack.getResourceByName("Metal");
 		_metalPositions = _callBack.getMap().getResourceMapSpotsPositions(metal);
-
-		for (AIFloat3 metalSpot : _metalPositions) {
-			SendTextMessage("Metal Spot at X: "+metalSpot.x + ", Y: "+metalSpot.y +", Z: "+metalSpot.z);
-		}
 	}
 
 	public float CalculateDistance(AIFloat3 a, AIFloat3 b)
@@ -213,17 +247,14 @@ public class MyJavaAI extends AbstractOOAI
 	}
 
 	@Override
-	public int update(int frame) {
+	public int update(int frame)
+	{
+		/*
 		if(frame == 0)
 		{
 			checkForMetal();
-			_commander.build(_baUnits.ArmSolarPlant, _commander.getPos(), 0, (short) 0, Integer.MAX_VALUE);
-		}
-		else if (frame == 600)
-		{
-			AIFloat3 closestspot=closestMetalSpot(_commander.getPos());
-			_commander.build(_baUnits.ArmMetalExtractor, closestspot, 0, (short) 0, Integer.MAX_VALUE);
-		}
+			DecideWhatToDoWithUnit(_commander);
+		}*/
 
 		return super.update(frame);
 	}

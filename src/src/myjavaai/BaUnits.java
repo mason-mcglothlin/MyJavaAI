@@ -9,16 +9,20 @@ public class BaUnits
 
     public UnitDef ArmMetalExtractor;
 
-    public BaUnits(List<UnitDef> unitDefs)
+    public UnitDef ArmKbotLab;
+
+    public BaUnits(List<UnitDef> unitDefs, MyJavaAI ai)
     {
         for(UnitDef unitDef : unitDefs)
         {
             String name = unitDef.getName();
-            
+
             switch (name)
             {
                 case "armsolar": ArmSolarPlant = unitDef; break;
                 case "armmex": ArmMetalExtractor = unitDef; break;
+                case "armlab": ArmKbotLab = unitDef; break;
+                default: ai.SendTextMessage("Unknown unit. Name: " + unitDef.getName()+ " Friendly Name: " + unitDef.getHumanName());
             }
         }
     }
