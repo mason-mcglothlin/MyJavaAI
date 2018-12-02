@@ -9,6 +9,10 @@ public class MyJavaAI extends AbstractOOAI
 {
 	private OOAICallback _callBack;
 
+	private BaUnits _baUnits;
+
+	List<AIFloat3> _metalPositions;
+
 	@Override
 	public int commandFinished(Unit arg0, int arg1, int arg2) {
 		// TODO Auto-generated method stub
@@ -65,6 +69,7 @@ public class MyJavaAI extends AbstractOOAI
 
 	@Override
 	public int init(int arg0, OOAICallback callback) {
+		_baUnits = new BaUnits(callback.getUnitDefs());
 		_callBack = callback;
 		return 0;
 	}
@@ -165,23 +170,59 @@ public class MyJavaAI extends AbstractOOAI
 		return super.unitMoveFailed(arg0);
 	}
 
+	public void checkForMetal()
+	{
+		SendTextMessage("Checking for resources...");
+		Resource metal = _callBack.getResourceByName("Metal");
+		_metalPositions = _callBack.getMap().getResourceMapSpotsPositions(metal);
+
+		for (AIFloat3 metalSpot : _metalPositions) {
+			SendTextMessage("Metal Spot at X: "+metalSpot.x + ", Y: "+metalSpot.y +", Z: "+metalSpot.z);
+		}
+	}
+
+	public float CalculateDistance(AIFloat3 a, AIFloat3 b)
+	{
+		float xDistance = a.x - b.x;
+		float yDistance = a.y - b.y;
+		float zDistance = a.z - b.z;
+		float totalDistanceSquared = xDistance*xDistance + yDistance*yDistance + zDistance*zDistance;
+		return totalDistanceSquared;
+	}
+
+	public AIFloat3 closestMetalSpot(AIFloat3 unitposition)
+	{
+		AIFloat3 closestspot=null;
+		for (AIFloat3 metalspot : _metalPositions) {
+			if (closestspot==null)
+			{
+				closestspot=metalspot;
+			}
+			else if(CalculateDistance(metalspot, unitposition) < CalculateDistance(closestspot, unitposition) && metalspot.hashCode()!=unitposition.hashCode())
+			{
+				closestspot=metalspot;
+			}
+		}
+
+		return closestspot;
+
+	}
+
+	public void SendTextMessage(String message){
+		_callBack.getGame().sendTextMessage(message, 0);
+	}
+
 	@Override
 	public int update(int frame) {
-		_callBack.getGame().sendTextMessage("Hello, world!", 0);
-
-		if(frame == 0){
-
-			List<UnitDef> unitDefs = this._callBack.getUnitDefs();
-			UnitDef solarPlant = null;
-
-			for(UnitDef unitDef : unitDefs){
-				if(unitDef.getName().equals("armsolar")){
-					solarPlant = unitDef;
-					break;
-				}
-			}
-
-			_commander.build(solarPlant, _commander.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+		if(frame == 0)
+		{
+			checkForMetal();
+			_commander.build(_baUnits.ArmSolarPlant, _commander.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+		}
+		else if (frame == 600)
+		{
+			AIFloat3 closestspot=closestMetalSpot(_commander.getPos());
+			_commander.build(_baUnits.ArmMetalExtractor, closestspot, 0, (short) 0, Integer.MAX_VALUE);
 		}
 
 		return super.update(frame);
