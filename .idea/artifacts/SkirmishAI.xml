@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="SkirmishAI">
+    <output-path>$PROJECT_DIR$/out/artifacts/SkirmishAI</output-path>
+    <root id="archive" name="SkirmishAI.jar">
+      <element id="module-output" name="MyJavaAI" />
+    </root>
+  </artifact>
+</component>

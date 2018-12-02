@@ -1,0 +1,1 @@
+copy out\artifacts\SkirmishAI\SkirmishAI.jar "%USERPROFILE%\Documents\My Games\Spring\AI\Skirmish\MasonJavaAI\0.1\SkirmishAI.jar"

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="src">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/vecmath.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/AIInterface.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/AIInterface-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/vecmath-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/JavaOO-AIWrapper.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
