@@ -7,7 +7,7 @@ import com.springrts.ai.oo.clb.*;
 
 public class MyJavaAI extends AbstractOOAI
 {
-	private OOAICallback Callback;
+	private OOAICallback _callBack;
 
 	@Override
 	public int commandFinished(Unit arg0, int arg1, int arg2) {
@@ -65,7 +65,7 @@ public class MyJavaAI extends AbstractOOAI
 
 	@Override
 	public int init(int arg0, OOAICallback callback) {
-		Callback = callback;
+		_callBack = callback;
 		return 0;
 	}
 
@@ -135,10 +135,16 @@ public class MyJavaAI extends AbstractOOAI
 		return super.unitDestroyed(arg0, arg1);
 	}
 
+	Unit commander;
+
 	@Override
-	public int unitFinished(Unit arg0) {
+	public int unitFinished(Unit unit) {
+		if(unit.getDef().getName().equals("armcom")) {
+			_callBack.getGame().sendTextMessage("Got the commander", 0);
+			commander = unit;
+		}
 		// TODO Auto-generated method stub
-		return super.unitFinished(arg0);
+		return super.unitFinished(unit);
 	}
 
 	@Override
@@ -161,7 +167,7 @@ public class MyJavaAI extends AbstractOOAI
 
 	@Override
 	public int update(int arg0) {
-		Callback.getGame().sendTextMessage("Hello, world!", 0);
+		_callBack.getGame().sendTextMessage("Hello, world!", 0);
 		return super.update(arg0);
 	}
 
