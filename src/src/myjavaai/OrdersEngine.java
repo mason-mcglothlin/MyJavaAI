@@ -3,6 +3,8 @@ package myjavaai;
 import com.springrts.ai.oo.*;
 import com.springrts.ai.oo.clb.*;
 
+import java.util.ArrayList;
+
 public class OrdersEngine
 {
     private OOAICallback _callback;
@@ -39,28 +41,30 @@ public class OrdersEngine
 
             if(needsMetal && _economyManager.MetalPercent < _economyManager.EnergyPercent)
             {
-                _ai.SendTextMessage("Out of metal, building mex.");
                 AIFloat3 closestSpot = _economyManager.ClosestAvailableMetalSpot(unit.getPos());
                 _economyManager.MarkMetalPositionAsTaken(closestSpot);
                 unit.build(_baUnits.ArmMetalExtractor, closestSpot, 0, (short) 0, Integer.MAX_VALUE);
             }
             else if(needsEnergy)
             {
-                _ai.SendTextMessage("Out of energy, building solar.");
                 unit.build(_baUnits.ArmSolarPlant, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
             }
             else
             {
-                _ai.SendTextMessage("Economy is good, building Kbot lab.");
                 unit.build(_baUnits.ArmKbotLab, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
             }
         }
         else if(unit.getDef() == _baUnits.ArmKbotLab)
         {
-            unit.build(_baUnits.ArmPeeWee, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
-            _ai.SendTextMessage("Don't know what to do with unit: " + unit.getDef().getHumanName());
+            ArrayList<UnitDef> options = new ArrayList<>();
+            options.add(_baUnits.ArmWarrior);
+            options.add(_baUnits.ArmPeeWee);
+            int random = ((int)Math.random()) * options.size();
+            _ai.SendTextMessage("Generated random number: " + random);
+            UnitDef selection = options.get(random);
+            unit.build(selection, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
         }
-        else if (unit.getDef() == _baUnits.ArmPeeWee)
+        else if (unit.getDef() == _baUnits.ArmPeeWee || unit.getDef() == _baUnits.ArmWarrior)
         {
             if(_enemyLocationManager.AreEnemyLocationsKnown())
             {
