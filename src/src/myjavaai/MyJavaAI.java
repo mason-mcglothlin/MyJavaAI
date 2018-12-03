@@ -10,9 +10,11 @@ public class MyJavaAI extends AbstractOOAI
 
 	private BaUnits _baUnits;
 
-	private Unit _commander;
+	private BaResources _baResources;
 
-	List<AIFloat3> _metalPositions;
+	private OrdersEngine _ordersEngine;
+
+	private EconomyManager _economyManager;
 
 	private String FormatPosition(AIFloat3 position)
 	{
@@ -87,8 +89,11 @@ public class MyJavaAI extends AbstractOOAI
 	{
 		//arg0 may be the AI's ID?
 		_callBack = callback;
-		_baUnits = new BaUnits(callback.getUnitDefs(), this);
 		SendTextMessage("Init called.");
+		_baUnits = new BaUnits(callback, this);
+		_baResources = new BaResources(callback, this);
+		_economyManager = new EconomyManager(callback, this, _baResources);
+		_ordersEngine = new OrdersEngine(callback, this, _baUnits, _baResources, _economyManager);
 		return 0;
 	}
 
@@ -170,62 +175,11 @@ public class MyJavaAI extends AbstractOOAI
 		return super.unitDestroyed(unitA, unitB);
 	}
 
-	private void DecideWhatToDoWithUnit(Unit unit)
-	{
-		SendTextMessage("Deciding what to do with Unit " + unit.getDef().getHumanName());
-
-		if(unit.getDef() == _baUnits.ArmCommander)
-		{
-			Resource Metal = _callBack.getResourceByName("Metal");
-			Resource Energy = _callBack.getResourceByName("Energy");
-
-			Economy economy = _callBack.getEconomy();
-			float currentMetal = economy.getCurrent(Metal);
-			float currentEnergy = economy.getCurrent(Energy);
-
-			float metalStorage = economy.getStorage(Metal);
-			float energyStorage = economy.getStorage(Energy);
-
-			float metalPercent = currentMetal / metalStorage;
-			float energyPercent = currentEnergy / energyStorage;
-
-			if(metalPercent < .20)
-			{
-				SendTextMessage("Out of metal, building mex.");
-				AIFloat3 closestSpot = closestMetalSpot(unit.getPos());
-				unit.build(_baUnits.ArmMetalExtractor, closestSpot, 0, (short) 0, Integer.MAX_VALUE);
-			}
-			else if(energyPercent < .20)
-			{
-				SendTextMessage("Out of energy, building solar.");
-				unit.build(_baUnits.ArmSolarPlant, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
-			}
-			else
-			{
-				SendTextMessage("Economy is good, building Kbot lab.");
-				unit.build(_baUnits.ArmKbotLab, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
-			}
-		}
-		else if(unit.getDef() == _baUnits.ArmKbotLab)
-		{
-			unit.build(_baUnits.ArmPeeWee, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
-			SendTextMessage("Don't know what to do with unit: " + unit.getDef().getHumanName());
-		}
-	}
-
 	@Override
 	public int unitFinished(Unit unit)
 	{
 		SendTextMessage("Event: unitFinished Unit: " + unit.getDef().getName());
-
-		if(unit.getDef().getName().equals("armcom"))
-		{
-			SendTextMessage("Got the commander");
-			_commander = unit;
-		}
-
-		DecideWhatToDoWithUnit(unit);
-
+		_ordersEngine.DecideWhatToDoWithUnit(unit);
 		return super.unitFinished(unit);
 	}
 
@@ -240,7 +194,7 @@ public class MyJavaAI extends AbstractOOAI
 	public int unitIdle(Unit unit)
 	{
 		SendTextMessage("Event: unitIdle Unit: " + unit.getDef().getName());
-		DecideWhatToDoWithUnit(unit);
+		_ordersEngine.DecideWhatToDoWithUnit(unit);
 		return super.unitIdle(unit);
 	}
 
@@ -251,40 +205,6 @@ public class MyJavaAI extends AbstractOOAI
 		return super.unitMoveFailed(unit);
 	}
 
-	public void checkForMetal()
-	{
-		SendTextMessage("Checking for resources...");
-		Resource metal = _callBack.getResourceByName("Metal");
-		_metalPositions = _callBack.getMap().getResourceMapSpotsPositions(metal);
-	}
-
-	public float CalculateDistance(AIFloat3 a, AIFloat3 b)
-	{
-		float xDistance = a.x - b.x;
-		float yDistance = a.y - b.y;
-		float zDistance = a.z - b.z;
-		float totalDistanceSquared = xDistance*xDistance + yDistance*yDistance + zDistance*zDistance;
-		return totalDistanceSquared;
-	}
-
-	public AIFloat3 closestMetalSpot(AIFloat3 unitposition)
-	{
-		AIFloat3 closestspot=null;
-		for (AIFloat3 metalspot : _metalPositions) {
-			if (closestspot==null)
-			{
-				closestspot=metalspot;
-			}
-			else if(CalculateDistance(metalspot, unitposition) < CalculateDistance(closestspot, unitposition) && metalspot.hashCode()!=unitposition.hashCode())
-			{
-				closestspot=metalspot;
-			}
-		}
-
-		return closestspot;
-
-	}
-
 	public void SendTextMessage(String message)
 	{
 		_callBack.getGame().sendTextMessage(message, 0);
@@ -293,13 +213,7 @@ public class MyJavaAI extends AbstractOOAI
 	@Override
 	public int update(int frame)
 	{
-		/*
-		if(frame == 0)
-		{
-			checkForMetal();
-			DecideWhatToDoWithUnit(_commander);
-		}*/
-
+		_economyManager.UpdateEconomy();
 		return super.update(frame);
 	}
 

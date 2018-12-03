@@ -15,8 +15,10 @@ public class BaUnits
 
     public UnitDef ArmPeeWee;
 
-    public BaUnits(List<UnitDef> unitDefs, MyJavaAI ai)
+    public BaUnits(OOAICallback callback, MyJavaAI ai)
     {
+        List<UnitDef> unitDefs = callback.getUnitDefs();
+
         for(UnitDef unitDef : unitDefs)
         {
             String name = unitDef.getName();
