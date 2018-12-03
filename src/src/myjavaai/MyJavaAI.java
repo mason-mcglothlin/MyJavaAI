@@ -16,6 +16,8 @@ public class MyJavaAI extends AbstractOOAI
 
 	private EconomyManager _economyManager;
 
+	private EnemyLocationManager _enemyLocationManager;
+
 	private String FormatPosition(AIFloat3 position)
 	{
 		return "X: " + position.x + " Y: " + position.y + " Z: " + position.z;
@@ -43,16 +45,18 @@ public class MyJavaAI extends AbstractOOAI
 	}
 
 	@Override
-	public int enemyDestroyed(Unit unitA, Unit unitB)
+	public int enemyDestroyed(Unit destroyedEnemy, Unit destroyer)
 	{
-		SendTextMessage("Event: enemyDestroyed UnitA: " + unitA.getDef().getName() + " UnitB: " + unitB);
-		return super.enemyDestroyed(unitA, unitB);
+		SendTextMessage("Event: enemyDestroyed UnitA: " + destroyedEnemy.getDef().getName() + " UnitB: " + destroyer.getDef().getName());
+		_enemyLocationManager.RemoveDestroyedEnemy(destroyedEnemy);
+		return super.enemyDestroyed(destroyedEnemy, destroyer);
 	}
 
 	@Override
 	public int enemyEnterLOS(Unit unit)
 	{
 		SendTextMessage("Event: enemyEnterLOS Unit: " + unit.getDef().getName());
+		_enemyLocationManager.AddEnemyPositionFromLOS(unit);
 		return super.enemyEnterLOS(unit);
 	}
 
@@ -60,6 +64,7 @@ public class MyJavaAI extends AbstractOOAI
 	public int enemyEnterRadar(Unit unit)
 	{
 		SendTextMessage("Event: enemyEnterRadar Unit: " + unit.getDef().getName());
+		_enemyLocationManager.AddEnemyPositionFromRadar(unit);
 		return super.enemyEnterRadar(unit);
 	}
 
@@ -74,6 +79,7 @@ public class MyJavaAI extends AbstractOOAI
 	public int enemyLeaveLOS(Unit unit)
 	{
 		SendTextMessage("Event: enemyLeaveLOS Unit: " + unit.getDef().getName());
+		_enemyLocationManager.RemoveEnemyPositionFromLOS(unit);
 		return super.enemyLeaveLOS(unit);
 	}
 
@@ -81,6 +87,7 @@ public class MyJavaAI extends AbstractOOAI
 	public int enemyLeaveRadar(Unit unit)
 	{
 		SendTextMessage("Event: enemyLeaveRadar Unit: " + unit.getDef().getName());
+		_enemyLocationManager.RemoveEnemyPositionFromRadar(unit);
 		return super.enemyLeaveRadar(unit);
 	}
 
@@ -93,7 +100,8 @@ public class MyJavaAI extends AbstractOOAI
 		_baUnits = new BaUnits(callback, this);
 		_baResources = new BaResources(callback, this);
 		_economyManager = new EconomyManager(callback, this, _baResources);
-		_ordersEngine = new OrdersEngine(callback, this, _baUnits, _baResources, _economyManager);
+		_enemyLocationManager = new EnemyLocationManager();
+		_ordersEngine = new OrdersEngine(callback, this, _baUnits, _baResources, _economyManager, _enemyLocationManager);
 		return 0;
 	}
 
