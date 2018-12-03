@@ -5,6 +5,8 @@ import com.springrts.ai.oo.clb.*;
 
 public class BaUnits
 {
+    public UnitDef ArmCommander;
+
     public UnitDef ArmSolarPlant;
 
     public UnitDef ArmMetalExtractor;
@@ -19,6 +21,7 @@ public class BaUnits
 
             switch (name)
             {
+                case "armcom": ArmCommander = unitDef; break;
                 case "armsolar": ArmSolarPlant = unitDef; break;
                 case "armmex": ArmMetalExtractor = unitDef; break;
                 case "armlab": ArmKbotLab = unitDef; break;
