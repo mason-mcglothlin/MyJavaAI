@@ -152,7 +152,7 @@ public class MyJavaAI extends AbstractOOAI
 	@Override
 	public int unitCreated(Unit createdUnit, Unit creator)
 	{
-		SendTextMessage("Event: unitCreated UnitA: " + createdUnit.getDef().getName() + " UnitB: " + creator.getDef().getName());
+		SendTextMessage("Event: unitCreated CreatedUnit: " + createdUnit.getDef().getName() + " Creator: " + creator.getDef().getName());
 		return super.unitCreated(createdUnit, creator);
 	}
 
@@ -192,22 +192,23 @@ public class MyJavaAI extends AbstractOOAI
 			if(metalPercent < .20)
 			{
 				SendTextMessage("Out of metal, building mex.");
-				AIFloat3 closestspot = closestMetalSpot(_commander.getPos());
-				_commander.build(_baUnits.ArmMetalExtractor, closestspot, 0, (short) 0, Integer.MAX_VALUE);
+				AIFloat3 closestSpot = closestMetalSpot(unit.getPos());
+				unit.build(_baUnits.ArmMetalExtractor, closestSpot, 0, (short) 0, Integer.MAX_VALUE);
 			}
 			else if(energyPercent < .20)
 			{
 				SendTextMessage("Out of energy, building solar.");
-				_commander.build(_baUnits.ArmSolarPlant, _commander.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+				unit.build(_baUnits.ArmSolarPlant, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
 			}
 			else
 			{
-				SendTextMessage("Economy is good, building kbot lab.");
-				_commander.build(_baUnits.ArmKbotLab, _commander.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+				SendTextMessage("Economy is good, building Kbot lab.");
+				unit.build(_baUnits.ArmKbotLab, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
 			}
 		}
 		else if(unit.getDef() == _baUnits.ArmKbotLab)
 		{
+			unit.build(_baUnits.ArmPeeWee, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
 			SendTextMessage("Don't know what to do with unit: " + unit.getDef().getHumanName());
 		}
 	}
