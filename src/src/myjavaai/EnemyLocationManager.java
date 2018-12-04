@@ -12,14 +12,18 @@ public class EnemyLocationManager
 
     private List<Unit> _knownEnemiesByLOS;
 
-    public EnemyLocationManager()
+    private MyJavaAI _ai;
+
+    public EnemyLocationManager(MyJavaAI ai)
     {
         _knownEnemiesByRadar = new ArrayList<>();
         _knownEnemiesByLOS = new ArrayList<>();
+        _ai = ai;
     }
 
     public void AddEnemyPositionFromRadar(Unit unit)
     {
+        _ai.SendTextMessage("Adding enemy position from Radar. Unit: " + unit.getDef().getName() + " Health: " + unit.getHealth());
         _knownEnemiesByRadar.add(unit);
     }
 
@@ -30,6 +34,7 @@ public class EnemyLocationManager
 
     public void AddEnemyPositionFromLOS(Unit unit)
     {
+        _ai.SendTextMessage("Adding enemy position from LOS. Unit: " + unit.getDef().getName() + " Health: " + unit.getHealth());
         _knownEnemiesByLOS.add(unit);
     }
 
@@ -69,11 +74,13 @@ public class EnemyLocationManager
 
         for (Unit unit : _knownEnemiesByRadar)
         {
+            _ai.SendTextMessage("Returning enemy " + unit.getDef().getHumanName() + " with health " + unit.getHealth() + " at " + unit.getPos() + " to attack from radar.");
             return unit.getPos();
         }
 
         for (Unit unit : _knownEnemiesByLOS)
         {
+            _ai.SendTextMessage("Returning enemy " + unit.getDef().getHumanName() + " with health " + unit.getHealth() + " at " + unit.getPos() + " to attack from LOS.");
             return unit.getPos();
         }
 
@@ -83,5 +90,52 @@ public class EnemyLocationManager
     public String GetStatus()
     {
         return "Known Enemies by Radar: " + _knownEnemiesByRadar.size() + " Known Enemies by Line of Sight: " + _knownEnemiesByLOS.size();
+    }
+
+    public void Update()
+    {
+        /*
+        If an enemy is destroyed and it wasn't by me (for example, friendly fire or some other team killed them),
+        then they will still be in my cache even though they're dead. Their positions become 0, 0, 0. That's not useful.
+        So remove them if they're dead.
+        */
+        try
+        {
+            List<Unit> unitsToRemoveFromRadar = new ArrayList<>();
+
+            for (Unit unit : _knownEnemiesByRadar)
+            {
+                if(unit.getHealth() == 0)
+                {
+                    _ai.SendTextMessage("Removing enemy from radar because it's presumed dead.");
+                    unitsToRemoveFromRadar.add(unit);
+                }
+            }
+
+            for(Unit unit : unitsToRemoveFromRadar)
+            {
+                _knownEnemiesByRadar.remove(unit);
+            }
+
+            List<Unit> unitsToRemoveFromLOS = new ArrayList<>();
+
+            for (Unit unit : _knownEnemiesByLOS)
+            {
+                if(unit.getHealth() == 0)
+                {
+                    _ai.SendTextMessage("Removing enemy from LOS because it's presumed dead.");
+                    unitsToRemoveFromLOS.add(unit);
+                }
+            }
+
+            for(Unit unit : unitsToRemoveFromLOS)
+            {
+                _knownEnemiesByLOS.remove(unit);
+            }
+        }
+        catch (Exception exception)
+        {
+            _ai.SendTextMessage("Failure to remove presumed dead unit: " + exception.toString());
+        }
     }
 }

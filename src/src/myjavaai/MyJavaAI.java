@@ -100,7 +100,7 @@ public class MyJavaAI extends AbstractOOAI
 		_baUnits = new BaUnits(callback, this);
 		_baResources = new BaResources(callback, this);
 		_economyManager = new EconomyManager(callback, this, _baResources);
-		_enemyLocationManager = new EnemyLocationManager();
+		_enemyLocationManager = new EnemyLocationManager(this);
 		_ordersEngine = new OrdersEngine(callback, this, _baUnits, _baResources, _economyManager, _enemyLocationManager);
 		return 0;
 	}
@@ -222,6 +222,7 @@ public class MyJavaAI extends AbstractOOAI
 	public int update(int frame)
 	{
 		_economyManager.UpdateEconomy();
+		_enemyLocationManager.Update();
 
 		if(frame % 600 == 0)
 		{

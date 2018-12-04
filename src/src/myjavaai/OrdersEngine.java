@@ -4,6 +4,7 @@ import com.springrts.ai.oo.*;
 import com.springrts.ai.oo.clb.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OrdersEngine
 {
@@ -79,12 +80,56 @@ public class OrdersEngine
         {
             if(_enemyLocationManager.AreEnemyLocationsKnown())
             {
+                /*
+                Need to implement this:
+                what's my max range?
+                what's the enemy's max range?
+                If their max range is greater, then issue orders to get very close to them
+                If my max range is greater, then issue orders to move to just outside their max range
+                 */
+
+                //For now, just move a little bit in their direction
+                AIFloat3 myPosition = unit.getPos();
                 AIFloat3 enemyPosition = _enemyLocationManager.GetClosestEnemyPositionToLocation(unit.getPos());
-                unit.moveTo(enemyPosition, (short) 0, 0);
+
+                float xDelta;
+                float yDelta;
+                float zDelta;
+
+                if(enemyPosition.x > myPosition.x)
+                {
+                    xDelta = 50;
+                }
+                else
+                {
+                    xDelta = -50;
+                }
+
+                if(enemyPosition.y > myPosition.y)
+                {
+                    yDelta = 50;
+                }
+                else
+                {
+                    yDelta = -50;
+                }
+
+                if(enemyPosition.z > myPosition.z)
+                {
+                    zDelta = 50;
+                }
+                else
+                {
+                    zDelta = -50;
+                }
+
+                AIFloat3 desiredPosition = new AIFloat3(myPosition.x + xDelta, myPosition.y + yDelta, myPosition.z + zDelta);
+                _ai.SendTextMessage("Moving from " + myPosition + " to " + desiredPosition + " which is toward enemy at " + enemyPosition);
+                unit.moveTo(desiredPosition, (short) 0, 0);
             }
             else
             {
-                //need to go find enemies
+                //need to go find enemies. For now, just move in a set direction.
 
                 AIFloat3 currentPosition = unit.getPos();
                 AIFloat3 positionToMoveTo = new AIFloat3(currentPosition.x, currentPosition.y, currentPosition.z + 50);
