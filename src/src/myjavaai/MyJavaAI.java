@@ -222,6 +222,14 @@ public class MyJavaAI extends AbstractOOAI
 	public int update(int frame)
 	{
 		_economyManager.UpdateEconomy();
+
+		if(frame % 600 == 0)
+		{
+			SendTextMessage(_enemyLocationManager.GetStatus());
+			SendTextMessage(_economyManager.GetStatus());
+		}
+
+
 		return super.update(frame);
 	}
 

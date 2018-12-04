@@ -79,4 +79,9 @@ public class EnemyLocationManager
 
         return location;//this shouldn't be reached
     }
+
+    public String GetStatus()
+    {
+        return "Known Enemies by Radar: " + _knownEnemiesByRadar.size() + " Known Enemies by Line of Sight: " + _knownEnemiesByLOS.size();
+    }
 }

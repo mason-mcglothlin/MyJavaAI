@@ -75,4 +75,9 @@ public class EconomyManager
     {
         _takenMetalPositions.add(position);
     }
+
+    public String GetStatus()
+    {
+        return "Total Metal Positions: " + _metalPositions.size() + " Taken Metal Positions: " + _takenMetalPositions.size() + " Metal Percent: " + MetalPercent + " Energy Percent: " + EnergyPercent;
+    }
 }

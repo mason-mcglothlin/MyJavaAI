@@ -31,10 +31,21 @@ public class OrdersEngine
 
     public void DecideWhatToDoWithUnit(Unit unit)
     {
+        // Increasing pos.x moves you East
+        // Decreasing pos.x moves you West
+        // Increasing pos.y did nothing
+        // Decreasing pos.y did nothing
+        // Increasing pos.z moves you South
+        // Decreasing pos.z moves you North
+
         _ai.SendTextMessage("Deciding what to do with Unit " + unit.getDef().getHumanName());
 
         if(unit.getDef() == _baUnits.ArmCommander)
         {
+            /*AIFloat3 currentPosition = unit.getPos();
+            AIFloat3 desiredPosition = new AIFloat3(currentPosition.x, currentPosition.y , currentPosition.z - 50);
+            _ai.SendTextMessage("Moving from " + currentPosition + " to " + desiredPosition);
+            unit.moveTo(desiredPosition, (short)0, 0);*/
             float desiredEconomyPercent = .60f;
             boolean needsMetal = _economyManager.MetalPercent < desiredEconomyPercent;
             boolean needsEnergy = _economyManager.EnergyPercent < desiredEconomyPercent;
@@ -59,7 +70,7 @@ public class OrdersEngine
             ArrayList<UnitDef> options = new ArrayList<>();
             options.add(_baUnits.ArmWarrior);
             options.add(_baUnits.ArmPeeWee);
-            int random = ((int)Math.random()) * options.size();
+            int random = (int)(Math.random() * options.size());
             _ai.SendTextMessage("Generated random number: " + random);
             UnitDef selection = options.get(random);
             unit.build(selection, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
@@ -76,8 +87,7 @@ public class OrdersEngine
                 //need to go find enemies
 
                 AIFloat3 currentPosition = unit.getPos();
-                float newLocation = currentPosition.y - 50;
-                AIFloat3 positionToMoveTo = new AIFloat3(currentPosition.x, newLocation, currentPosition.z);
+                AIFloat3 positionToMoveTo = new AIFloat3(currentPosition.x, currentPosition.y, currentPosition.z + 50);
                 _ai.SendTextMessage("Moving unit from " + currentPosition + " to " + positionToMoveTo);
                 unit.moveTo(positionToMoveTo, (short)0, 0);
             }
