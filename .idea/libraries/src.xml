@@ -6,6 +6,7 @@
       <root url="jar://$PROJECT_DIR$/src/AIInterface-src.jar!/" />
       <root url="jar://$PROJECT_DIR$/src/vecmath-src.jar!/" />
       <root url="jar://$PROJECT_DIR$/src/JavaOO-AIWrapper.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/serilogj-0.5.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -3,6 +3,10 @@ package myjavaai;
 import java.util.List;
 import com.springrts.ai.oo.*;
 import com.springrts.ai.oo.clb.*;
+import serilogj.LoggerConfiguration;
+import serilogj.events.LogEventLevel;
+
+import static serilogj.sinks.seq.SeqSinkConfigurator.seq;
 
 public class MyJavaAI extends AbstractOOAI
 {
@@ -102,6 +106,21 @@ public class MyJavaAI extends AbstractOOAI
 		_economyManager = new EconomyManager(callback, this, _baResources);
 		_enemyLocationManager = new EnemyLocationManager(this);
 		_ordersEngine = new OrdersEngine(callback, this, _baUnits, _baResources, _economyManager, _enemyLocationManager);
+
+		try
+		{
+			serilogj.Log.setLogger(new LoggerConfiguration()
+					.writeTo(seq("http://localhost:5341/"))
+					.setMinimumLevel(LogEventLevel.Verbose)
+					.createLogger());
+
+			serilogj.Log.information("AI and Serilog initialized");
+		}
+		catch (Exception exception)
+		{
+			SendTextMessage("Error initializing Serilog: " + exception.toString());
+		}
+
 		return 0;
 	}
 
@@ -215,6 +234,7 @@ public class MyJavaAI extends AbstractOOAI
 
 	public void SendTextMessage(String message)
 	{
+		serilogj.Log.verbose("Received text message: " + message);
 		_callBack.getGame().sendTextMessage(message, 0);
 	}
 
