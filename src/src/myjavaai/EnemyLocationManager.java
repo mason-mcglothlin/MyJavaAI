@@ -70,21 +70,36 @@ public class EnemyLocationManager
 
     public AIFloat3 GetClosestEnemyPositionToLocation(AIFloat3 location)
     {
-        //for know we'll just return the first units location
+        List<Unit> allUnits = new ArrayList<>();
+        allUnits.addAll(_knownEnemiesByLOS);
+        allUnits.addAll(_knownEnemiesByRadar);
 
-        for (Unit unit : _knownEnemiesByRadar)
+        AIFloat3 closestPosition = null;
+        float closestDistance = 0;
+
+        for (Unit unit : allUnits)
         {
+            if(closestPosition == null)
+            {
+                 closestPosition = unit.getPos();
+                 closestDistance = UtilityFunctions.CalculateDistanceSquared(location, closestPosition);
+            }
+            else
+            {
+                AIFloat3 position = unit.getPos();
+                float distance = UtilityFunctions.CalculateDistanceSquared(location, position);
+
+                if(distance < closestDistance)
+                {
+                    closestPosition = position;
+                    closestDistance = distance;
+                }
+            }
+
             _ai.SendTextMessage("Returning enemy " + unit.getDef().getHumanName() + " with health " + unit.getHealth() + " at " + unit.getPos() + " to attack from radar.");
-            return unit.getPos();
         }
 
-        for (Unit unit : _knownEnemiesByLOS)
-        {
-            _ai.SendTextMessage("Returning enemy " + unit.getDef().getHumanName() + " with health " + unit.getHealth() + " at " + unit.getPos() + " to attack from LOS.");
-            return unit.getPos();
-        }
-
-        return location;//this shouldn't be reached
+        return closestPosition;
     }
 
     public String GetStatus()

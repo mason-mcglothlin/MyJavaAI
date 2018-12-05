@@ -56,7 +56,7 @@ public class EconomyManager
                 {
                     closestSpot = metalSpot;
                 }
-                else if(UtilityFunctions.CalculateDistance(metalSpot, unitPosition) < UtilityFunctions.CalculateDistance(closestSpot, unitPosition) && !_takenMetalPositions.contains(metalSpot))
+                else if(UtilityFunctions.CalculateDistanceSquared(metalSpot, unitPosition) < UtilityFunctions.CalculateDistanceSquared(closestSpot, unitPosition) && !_takenMetalPositions.contains(metalSpot))
                 {
                     closestSpot = metalSpot;
                 }
