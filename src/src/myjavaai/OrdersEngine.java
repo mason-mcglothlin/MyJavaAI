@@ -40,13 +40,10 @@ public class OrdersEngine
         // Decreasing pos.z moves you North
 
         _ai.SendTextMessage("Deciding what to do with Unit " + unit.getDef().getHumanName());
+        UnitDef unitDef = unit.getDef();
 
-        if(unit.getDef() == _baUnits.ArmCommander)
+        if(unitDef== _baUnits.ArmCommander)
         {
-            /*AIFloat3 currentPosition = unit.getPos();
-            AIFloat3 desiredPosition = new AIFloat3(currentPosition.x, currentPosition.y , currentPosition.z - 50);
-            _ai.SendTextMessage("Moving from " + currentPosition + " to " + desiredPosition);
-            unit.moveTo(desiredPosition, (short)0, 0);*/
             float desiredEconomyPercent = .60f;
             boolean needsMetal = _economyManager.MetalPercent < desiredEconomyPercent;
             boolean needsEnergy = _economyManager.EnergyPercent < desiredEconomyPercent;
@@ -66,17 +63,52 @@ public class OrdersEngine
                 unit.build(_baUnits.ArmKbotLab, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
             }
         }
-        else if(unit.getDef() == _baUnits.ArmKbotLab)
+        else if(unit.getDef() == _baUnits.ArmConstructionKbot)
+        {
+            float desiredEconomyPercent = .60f;
+            boolean needsMetal = _economyManager.MetalPercent < desiredEconomyPercent;
+            boolean needsEnergy = _economyManager.EnergyPercent < desiredEconomyPercent;
+
+            if(needsMetal && _economyManager.MetalPercent < _economyManager.EnergyPercent)
+            {
+                AIFloat3 closestSpot = _economyManager.ClosestAvailableMetalSpot(unit.getPos());
+                _economyManager.MarkMetalPositionAsTaken(closestSpot);
+                unit.build(_baUnits.ArmMetalExtractor, closestSpot, 0, (short) 0, Integer.MAX_VALUE);
+            }
+            else if(needsEnergy)
+            {
+                unit.build(_baUnits.ArmSolarPlant, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+            }
+            else
+            {
+                ArrayList<UnitDef> options = new ArrayList<>();
+                options.add(_baUnits.ArmKbotLab);
+                options.add(_baUnits.ArmAdvancedKbotLab);
+                int random = (int)(Math.random() * options.size());
+                UnitDef selection = options.get(random);
+                unit.build(selection, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+            }
+        }
+        else if(unitDef == _baUnits.ArmKbotLab)
         {
             ArrayList<UnitDef> options = new ArrayList<>();
             options.add(_baUnits.ArmWarrior);
             options.add(_baUnits.ArmPeeWee);
+            options.add(_baUnits.ArmConstructionKbot);
             int random = (int)(Math.random() * options.size());
-            _ai.SendTextMessage("Generated random number: " + random);
             UnitDef selection = options.get(random);
             unit.build(selection, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
         }
-        else if (unit.getDef() == _baUnits.ArmPeeWee || unit.getDef() == _baUnits.ArmWarrior)
+        else if(unitDef == _baUnits.ArmAdvancedKbotLab)
+        {
+            ArrayList<UnitDef> options = new ArrayList<>();
+            options.add(_baUnits.ArmMaverick);
+            options.add(_baUnits.ArmFatBoy);
+            int random = (int)(Math.random() * options.size());
+            UnitDef selection = options.get(random);
+            unit.build(selection, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
+        }
+        else if (unitDef== _baUnits.ArmPeeWee || unitDef == _baUnits.ArmWarrior)
         {
             if(_enemyLocationManager.AreEnemyLocationsKnown())
             {

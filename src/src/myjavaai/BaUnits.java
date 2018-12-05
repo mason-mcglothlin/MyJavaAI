@@ -17,6 +17,14 @@ public class BaUnits
 
     public UnitDef ArmWarrior;
 
+    public UnitDef ArmConstructionKbot;
+
+    public UnitDef ArmAdvancedKbotLab;
+
+    public UnitDef ArmMaverick;
+
+    public UnitDef ArmFatBoy;
+
     public BaUnits(OOAICallback callback, MyJavaAI ai)
     {
         List<UnitDef> unitDefs = callback.getUnitDefs();
@@ -33,6 +41,10 @@ public class BaUnits
                 case "armlab": ArmKbotLab = unitDef; break;
                 case "armpw": ArmPeeWee = unitDef; break;
                 case "armwar": ArmWarrior = unitDef; break;
+                case "armck": ArmConstructionKbot = unitDef; break;
+                case "armalab": ArmAdvancedKbotLab = unitDef; break;
+                case "armmav": ArmMaverick = unitDef; break;
+                case "armfboy": ArmFatBoy = unitDef; break;
                 default: ai.SendTextMessage("Unknown unit. Name: " + unitDef.getName()+ " Friendly Name: " + unitDef.getHumanName());
             }
         }

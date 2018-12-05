@@ -214,6 +214,8 @@ public class MyJavaAI extends AbstractOOAI
 	public int unitGiven(Unit unit, int arg1, int arg2)
 	{
 		SendTextMessage("Event: unitGiven Unit: " + unit.getDef().getName() + " Arg1: " + arg1 + " Arg2: " + arg2);
+		//do I need to verify if the unit was given to me? Probably.
+		_ordersEngine.DecideWhatToDoWithUnit(unit);
 		return super.unitGiven(unit, arg1, arg2);
 	}
 
