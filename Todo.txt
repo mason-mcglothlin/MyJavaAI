@@ -7,3 +7,4 @@ Group army units so they attack together.
 Build anti air turrets.
 Build T3 krogoths.
 Build fusion and geothermal and moho mines and moho metal makers.
+Try to attack enemies from edge of our range if we outrange them.
