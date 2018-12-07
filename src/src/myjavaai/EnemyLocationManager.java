@@ -75,19 +75,19 @@ public class EnemyLocationManager
         allUnits.addAll(_knownEnemiesByRadar);
 
         AIFloat3 closestPosition = null;
-        float closestDistance = 0;
+        double closestDistance = 0;
 
         for (Unit unit : allUnits)
         {
             if(closestPosition == null)
             {
                  closestPosition = unit.getPos();
-                 closestDistance = UtilityFunctions.CalculateDistanceSquared(location, closestPosition);
+                 closestDistance = UtilityFunctions.CalculateDistance(location, closestPosition);
             }
             else
             {
                 AIFloat3 position = unit.getPos();
-                float distance = UtilityFunctions.CalculateDistanceSquared(location, position);
+                double distance = UtilityFunctions.CalculateDistance(location, position);
 
                 if(distance < closestDistance)
                 {

@@ -25,6 +25,8 @@ public class BaUnits
 
     public UnitDef ArmFatBoy;
 
+    public UnitDef ArmEnergyConverter;
+
     public BaUnits(OOAICallback callback, MyJavaAI ai)
     {
         List<UnitDef> unitDefs = callback.getUnitDefs();
@@ -45,6 +47,7 @@ public class BaUnits
                 case "armalab": ArmAdvancedKbotLab = unitDef; break;
                 case "armmav": ArmMaverick = unitDef; break;
                 case "armfboy": ArmFatBoy = unitDef; break;
+                case "armmakr": ArmEnergyConverter = unitDef; break;
                 default: ai.SendTextMessage("Unknown unit. Name: " + unitDef.getName()+ " Friendly Name: " + unitDef.getHumanName());
             }
         }
