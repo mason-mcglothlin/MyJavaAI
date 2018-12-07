@@ -124,15 +124,20 @@ public class OrdersEngine
                 int random = (int) (Math.random() * options.size());
                 UnitDef selection = options.get(random);
                 unit.build(selection, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
-            } else if (unitDef == _baUnits.ArmAdvancedKbotLab) {
+            }
+            else if (unitDef == _baUnits.ArmAdvancedKbotLab)
+            {
                 ArrayList<UnitDef> options = new ArrayList<>();
                 options.add(_baUnits.ArmMaverick);
                 options.add(_baUnits.ArmFatBoy);
                 int random = (int) (Math.random() * options.size());
                 UnitDef selection = options.get(random);
                 unit.build(selection, unit.getPos(), 0, (short) 0, Integer.MAX_VALUE);
-            } else if (unitDef == _baUnits.ArmPeeWee || unitDef == _baUnits.ArmWarrior || unitDef == _baUnits.ArmMaverick || unitDef == _baUnits.ArmFatBoy) {
-                if (_enemyLocationManager.AreEnemyLocationsKnown()) {
+            }
+            else if (unitDef == _baUnits.ArmPeeWee || unitDef == _baUnits.ArmWarrior || unitDef == _baUnits.ArmMaverick || unitDef == _baUnits.ArmFatBoy)
+            {
+                if (_enemyLocationManager.AreEnemyLocationsKnown())
+                {
                 /*
                 Need to implement this:
                 what's my max range?
@@ -145,7 +150,7 @@ public class OrdersEngine
                     AIFloat3 myPosition = unit.getPos();
                     AIFloat3 enemyPosition = _enemyLocationManager.GetClosestEnemyPositionToLocation(unit.getPos());
 
-                    int translationAmount = 4000;
+                    int translationAmount = 500;
 
                     int xDelta;
                     int yDelta;
@@ -172,11 +177,13 @@ public class OrdersEngine
                     AIFloat3 desiredPosition = new AIFloat3(myPosition.x + xDelta, myPosition.y + yDelta, myPosition.z + zDelta);
                     _ai.SendTextMessage("Moving from " + myPosition + " to " + desiredPosition + " which is toward enemy at " + enemyPosition);
                     unit.moveTo(desiredPosition, (short) 0, 0);
-                } else {
+                }
+                else
+                {
                     //need to go find enemies. For now, just move in a set direction.
 
                     AIFloat3 currentPosition = unit.getPos();
-                    AIFloat3 positionToMoveTo = new AIFloat3(currentPosition.x, currentPosition.y, currentPosition.z + 4000);
+                    AIFloat3 positionToMoveTo = new AIFloat3(currentPosition.x, currentPosition.y, currentPosition.z + 500);
                     _ai.SendTextMessage("Moving unit from " + currentPosition + " to " + positionToMoveTo);
                     unit.moveTo(positionToMoveTo, (short) 0, 0);
                 }
